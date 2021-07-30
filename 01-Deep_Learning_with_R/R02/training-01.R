@@ -19,11 +19,12 @@ str(train_labels)
 
 str(test_images)
 
-# Build the NN (%>% is known as the "pipe operator")
+# Build the NN (%>% is known as the "pipe operator" and signifies in place modification of our network)
 network <- keras_model_sequential() %>%
   layer_dense(units = 512, activation = "relu", input_shape = c(28 * 28)) %>%
   layer_dense(units = 10, activation = "softmax")
 
+# Compile the NN
 network %>% compile(
   optimizer = "rmsprop",
   loss = "categorical_crossentropy",

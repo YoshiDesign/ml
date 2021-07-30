@@ -12,4 +12,5 @@ typeof(train_images)
 
 # Plot
 digit <- train_images[15831,,]
+digit
 plot(as.raster(digit, max = 255))
