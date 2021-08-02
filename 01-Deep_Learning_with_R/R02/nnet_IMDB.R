@@ -54,18 +54,6 @@ y_test <- as.numeric(test_labels)
 length(y_train)
 length(y_test)
 
-# Building a 3 layer network 16 -> 16 -> 1
-model <- keras_model_sequential() %>%
-  layer_dense(units = 16, activation = "relu", input_shape = c(10000)) %>%
-  layer_dense(units = 16, activation = "relu") %>%
-  layer_dense(units = 1, activation = "sigmoid")
-  
-model %>% compile (
-  optimizer = "rmsprop",
-  loss = "binary_crossentropy",
-  metrics = c("accuracy")
-)
-
 # Create a validation set
 val_indices <- 1:10000
 x_val <- x_train[val_indices,]
@@ -73,12 +61,68 @@ partial_x_train <- x_train[-val_indices,]
 y_val <- y_train[val_indices]
 partial_y_train <- y_train[-val_indices]
 
+
+# Building a 3 layer network 16 -> 16 -> 1
+model <- keras_model_sequential() %>%
+  layer_dense(units = 16, activation = "relu", input_shape = c(10000)) %>%
+  layer_dense(units = 16, activation = "relu") %>%
+  layer_dense(units = 32, activation = "relu") %>%
+  layer_dense(units = 1, activation = "sigmoid")
+  
+model %>% compile (
+  optimizer = "adam",
+  loss = "mse",
+  metrics = c("accuracy")
+)
+
+str(model$summary())
+
 history <- model %>% fit (
   partial_x_train,
   partial_y_train,
   epochs = 20,
-  batch_size = 512,
+  batch_size = 1024,
   validation_data = list(x_val, y_val)
 )
 
-str(history)
+plot(history)
+
+# Turn our history into a dataframe and extract datasets categorically
+df <- as.data.frame(history)
+df
+
+##
+# Exercise: turning our history into the initial plot from training
+##
+
+# Extract only the training data
+trn <- df[df$data == "training",][0:3]
+trn
+
+# Just for reference - you can use conditions as index qualifiers in R
+# trn_acc <- trn[trn$metric == "accuracy",][0:2]
+# trn_loss <- trn[trn$metric == "loss",][0:2]
+
+# Extract only the validation data
+vld <- df[df$data == "validation",][0:3]
+vld
+
+# Just for reference - you can use conditions as index qualifiers in R
+# vld_accuracy <-vld[vld$metric == "accuracy",]
+# vld_loss <- vld[vld$metric == "loss",]
+
+ggplot(trn, aes(epoch, value, colour=metric)) + 
+  geom_line() + 
+  geom_point() +
+  ylim(0,1)
+
+ggplot(vld, aes(epoch, value, colour=metric)) + 
+  geom_line() + 
+  geom_point() +
+  ylim(0,1)
+
+df
+
+p <- ggplot(df, aes(epoch, value, colour=metric)) + geom_point() + geom_line()
+p + facet_grid(rows = vars(data))
+
