@@ -108,6 +108,7 @@ vld <- df[df$data == "validation",][0:3]
 vld
 
 # Just for reference - you can use conditions as index qualifiers in R
+# Or if you're wasting your time on Twitter you can just close the fckin thing
 # vld_accuracy <-vld[vld$metric == "accuracy",]
 # vld_loss <- vld[vld$metric == "loss",]
 
@@ -123,6 +124,10 @@ ggplot(vld, aes(epoch, value, colour=metric)) +
 
 df
 
-p <- ggplot(df, aes(epoch, value, colour=metric)) + geom_point() + geom_line()
+p <- ggplot(df, aes(epoch, value, colour=metric)) + 
+  geom_point() +
+  geom_line()
 p + facet_grid(rows = vars(data))
 
+# Make predictions
+model %>% predict(x_test[1:10,])
