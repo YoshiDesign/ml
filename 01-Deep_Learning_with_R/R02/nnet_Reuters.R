@@ -1,7 +1,7 @@
 library(keras)
 reuters <- dataset_reuters(num_words=10000)
-dim(reuters$test$y)
-n <- matrix(round(runif(5*20,10)), nrow = 5, ncol = 20)
+
+n <- array(round(runif(5*20*10,0,10)), dim=c(5,20,10))
 n
 
 c(c(train_data, train_labels),c(test_data,test_labels)) %<-% reuters
@@ -15,7 +15,8 @@ decoded_newswire <- sapply(train_data[[2]], function(index){
   word <- if (index >= 3) reverse_word_index[[as.character(index - 3)]]
   if (!is.null(word)) word else "?"
 })
-# This data is terrible
+
+# This data is pretty dumb
 decoded_newswire
 
 # One Hot encoding function
@@ -34,7 +35,12 @@ vectorize_sequences <- function(sequences, dimension = 10000) {
 
 x_train <- vectorize_sequences(train_data)
 x_test <- vectorize_sequences(test_data)
+x_train[,7124]
 
+max(train_labels)
+max(test_labels)
+
+# Unused, this was before i switched to sparse_categorical_crossentropy
 one_hot_train_labels <- to_categorical(train_labels)
 one_hot_test_labels <- to_categorical(test_labels)
 
@@ -45,23 +51,30 @@ model <- keras_model_sequential() %>%
 
 model %>% compile(
   optimizer = "rmsprop",
-  loss = "categorical_crossentropy",
+  loss = "sparse_categorical_crossentropy",
   metrics = c("accuracy")
 )
 
 val_indices <- 1:1000
+
+# Set aside a validation set from the training set
 x_val <- x_train[val_indices,]
+
+# The rest will be our training data
 partial_x_train <- x_train[-val_indices,]
 
-y_val <- one_hot_train_labels[val_indices,]
-partial_y_train = one_hot_train_labels[-val_indices,]
+# Split our labels in an identical manner
+y_val <- train_labels[val_indices]
+partial_y_train = train_labels[-val_indices]
 
+# Commence the training loop
 history <- model %>% fit(
   partial_x_train,
   partial_y_train,
   epochs = 9,
-  batch_size = 512,
+  batch_size = 256,
   validation_data = list(x_val, y_val)
-)  
+)
+
 plot(history)
 rm(model)
