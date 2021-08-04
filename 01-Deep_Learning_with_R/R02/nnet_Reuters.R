@@ -1,9 +1,6 @@
 library(keras)
 reuters <- dataset_reuters(num_words=10000)
 
-n <- array(round(runif(5*20*10,0,10)), dim=c(5,20,10))
-n
-
 c(c(train_data, train_labels),c(test_data,test_labels)) %<-% reuters
 
 # Reverse the word index just to inspect things. Not being fed into the network
