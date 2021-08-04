@@ -2,7 +2,7 @@
 # The input data is vectors, the labels are scalars (0 or 1)
 # The ideal NN for such an arrangement will be a densely connected network
 # using the ReLU activation function
-
+install.packages("keras")
 library(keras)
 imdb <- dataset_imdb(num_words=10000)
 c(c(train_data, train_labels), c(test_data, test_labels)) %<-% imdb
@@ -57,12 +57,13 @@ length(y_test)
 # Building a 3 layer network 16 -> 16 -> 1
 model <- keras_model_sequential() %>%
   layer_dense(units = 16, activation = "relu", input_shape = c(10000)) %>%
-  layer_dense(units = 16, activation = "relu") %>%
+  layer_dense(units = 4, activation = "relu") %>%
+  layer_dense(units = 4, activation = "relu") %>%
   layer_dense(units = 1, activation = "sigmoid")
   
 model %>% compile (
   optimizer = "rmsprop",
-  loss = "binary_crossentropy",
+  loss = "mse",
   metrics = c("accuracy")
 )
 
@@ -76,7 +77,7 @@ partial_y_train <- y_train[-val_indices]
 history <- model %>% fit (
   partial_x_train,
   partial_y_train,
-  epochs = 20,
+  epochs = 60,
   batch_size = 512,
   validation_data = list(x_val, y_val)
 )
