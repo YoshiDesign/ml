@@ -1,5 +1,3 @@
-# Just a reminder, these dimensions read as: Ten rows, with 2 columns each, three times.
-
 arr4d <- array(round(runif(10*2*3*4, 0, 1200)), dim=c(10,2,3,4))
 arr3d <- array(round(runif(10*2*3, 0, 1200)), dim=c(10,2,3))
 
