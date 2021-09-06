@@ -46,6 +46,8 @@ model <- keras_model_sequential() %>%
   layer_dense(units = 64, activation = "relu") %>%
   layer_dense(units = 46, activation = "softmax")
 
+model$summary()
+
 model %>% compile(
   optimizer = "rmsprop",
   loss = "sparse_categorical_crossentropy",
@@ -73,5 +75,4 @@ history <- model %>% fit(
   validation_data = list(x_val, y_val)
 )
 
-plot(history)
 rm(model)
